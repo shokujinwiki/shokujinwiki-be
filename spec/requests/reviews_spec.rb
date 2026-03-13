@@ -16,15 +16,20 @@ RSpec.describe "/reviews", type: :request do
   # This should return the minimal set of attributes required to create a valid
   # Review. As you add validations to Review, be sure to
   # adjust the attributes here as well.
+
+  let(:user) { create(:user) }
+
   let(:valid_attributes) do
     {
-      content: "hello"
+      content: "hello",
+      user_id: user.id
     }
   end
 
   let(:invalid_attributes) do
     {
-      content: nil
+      content: nil,
+      user_id: nil
     }
   end
 
@@ -37,16 +42,19 @@ RSpec.describe "/reviews", type: :request do
   }
 
   describe "GET /index" do
+    let(:user) { create(:user) }
+
     before do
       25.times do |i|
         Review.create!(
-          content: "review #{i}"
+          content: "review #{i}",
+          user:
         )
       end
     end
 
     it "returns paginated reviews with meta" do
-      get reviews_url, headers: valid_headers, as: :json
+      get reviews_url, headers: valid_headers
 
       expect(response).to be_successful
       body = response.parsed_body
