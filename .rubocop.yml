@@ -20,6 +20,8 @@ RSpec/MultipleExpectations:
   Enabled: false
 RSpecRails/InferredSpecType:
   Enabled: false
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
 Layout/IndentationConsistency:
   Enabled: true
 Layout/IndentationWidth:
