@@ -12,8 +12,13 @@ plugins:
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
 
-RSpec/MultipleExpectations:
-  Enabled: false
-
 AllCops:
   NewCops: enable
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
+Layout/IndentationConsistency:
+  Enabled: true
+Layout/IndentationWidth:
+  Enabled: true
