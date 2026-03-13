@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Review do
+RSpec.describe Review, type: :model do
   it "is valid with valid attributes" do
     review = build(:review, content: "hello")
     expect(review).to be_valid
