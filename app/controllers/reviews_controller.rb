@@ -1,13 +1,16 @@
 class ReviewsController < ApplicationController
   before_action :set_review, only: %i[ show update destroy ]
 
+  DEFAULT_LIMIT = 20
+  MAX_LIMIT = 100
+
   # GET /reviews
   def index
     page = params.fetch(:page, 1).to_i
-    limit = params.fetch(:limit, 20).to_i
+    limit = params.fetch(:limit, DEFAULT_LIMIT).to_i
 
     page = 1 if page < 1
-    limit = limit.clamp(1, 100)
+    limit = limit.clamp(1, MAX_LIMIT)
 
     total_count = Review.count
     total_pages = (total_count.to_f / limit).ceil
