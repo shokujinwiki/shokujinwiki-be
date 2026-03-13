@@ -86,6 +86,20 @@ RSpec.describe "/reviews", type: :request do
         "total_pages" => 3
       )
     end
+
+    it "caps limit at 100" do
+      get reviews_url, params: { limit: 999 }, headers: valid_headers
+      body = response.parsed_body
+
+      expect(response).to be_successful
+      expect(body["data"].size).to eq(25)
+      expect(body["meta"]).to include(
+        "page" => 1,
+        "limit" => 100,
+        "total_count" => 25,
+        "total_pages" => 1
+      )
+    end
   end
 
   describe "GET /show" do

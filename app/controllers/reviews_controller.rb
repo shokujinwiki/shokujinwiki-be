@@ -7,7 +7,7 @@ class ReviewsController < ApplicationController
     limit = params.fetch(:limit, 20).to_i
 
     page = 1 if page < 1
-    limit = 20 if limit < 1
+    limit = limit.clamp(1, 100)
 
     total_count = Review.count
     total_pages = (total_count.to_f / limit).ceil
