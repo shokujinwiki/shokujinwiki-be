@@ -47,7 +47,7 @@ RSpec.describe "/reviews", type: :request do
 
     it "returns paginated reviews with meta" do
       get reviews_url, headers: valid_headers, as: :json
-      body = JSON.parse(response.body)
+      body = response.parsed_body
 
       expect(response).to be_successful
       expect(body["data"].size).to eq(20)
@@ -60,8 +60,8 @@ RSpec.describe "/reviews", type: :request do
     end
 
     it "returns paginated reviews with meta for page 2" do
-      get reviews_url, params: { page: 2 }, headers: valid_headers, as: :json
-      body = JSON.parse(response.body)
+      get reviews_url, params: { page: 2 }, headers: valid_headers
+      body = response.parsed_body
 
       expect(response).to be_successful
       expect(body["data"].size).to eq(5)
@@ -74,8 +74,8 @@ RSpec.describe "/reviews", type: :request do
     end
 
     it "respects per parameter" do
-      get reviews_url, params: { page: 2, per: 10 }, headers: valid_headers, as: :json
-      body = JSON.parse(response.body)
+      get reviews_url, params: { page: 2, per: 10 }, headers: valid_headers
+      body = response.parsed_body
 
       expect(response).to be_successful
       expect(body["data"].size).to eq(10)
