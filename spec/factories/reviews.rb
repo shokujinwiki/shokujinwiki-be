@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :review do
-    content { "MyString" }
+    content { "My review" }
   end
 end
