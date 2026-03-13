@@ -4,25 +4,20 @@ class ReviewsController < ApplicationController
   # GET /reviews
   def index
     page = params.fetch(:page, 1).to_i
-    per = params.fetch(:per, 20).to_i
+    limit = params.fetch(:limit, 20).to_i
 
     page = 1 if page < 1
-    per = 20 if per < 1
+    limit = 20 if limit < 1
 
     total_count = Review.count
-    total_pages = (total_count.to_f / per).ceil
-    offset = (page - 1) * per
+    total_pages = (total_count.to_f / limit).ceil
+    offset = (page - 1) * limit
 
-    reviews = Review.order(created_at: :desc).limit(per).offset(offset)
+    reviews = Review.order(created_at: :desc).limit(limit).offset(offset)
 
     render json: {
       data: reviews,
-      meta: {
-        page: page,
-        per: per,
-        total_count: total_count,
-        total_pages: total_pages
-      }
+      meta: { page:, limit:, total_count:, total_pages: }
     }
   end
 

@@ -53,7 +53,7 @@ RSpec.describe "/reviews", type: :request do
       expect(body["data"].size).to eq(20)
       expect(body["meta"]).to include(
         "page" => 1,
-        "per" => 20,
+        "limit" => 20,
         "total_count" => 25,
         "total_pages" => 2
       )
@@ -67,21 +67,21 @@ RSpec.describe "/reviews", type: :request do
       expect(body["data"].size).to eq(5)
       expect(body["meta"]).to include(
         "page" => 2,
-        "per" => 20,
+        "limit" => 20,
         "total_count" => 25,
         "total_pages" => 2
       )
     end
 
-    it "respects per parameter" do
-      get reviews_url, params: { page: 2, per: 10 }, headers: valid_headers
+    it "respects limit parameter" do
+      get reviews_url, params: { page: 2, limit: 10 }, headers: valid_headers
       body = response.parsed_body
 
       expect(response).to be_successful
       expect(body["data"].size).to eq(10)
       expect(body["meta"]).to include(
         "page" => 2,
-        "per" => 10,
+        "limit" => 10,
         "total_count" => 25,
         "total_pages" => 3
       )
