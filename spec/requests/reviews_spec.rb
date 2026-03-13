@@ -143,10 +143,14 @@ RSpec.describe "/reviews", type: :request do
   end
 
   describe "GET /show" do
-    it "renders a successful response" do
-      review = Review.create! valid_attributes
-      get review_url(review), as: :json
-      expect(response).to be_successful
+    it "returns not found" do
+      get review_url(999), headers: valid_headers
+
+      expect(response).to have_http_status(:not_found)
+      body = response.parsed_body
+      expect(body).to eq(
+        "message" => "Review not found"
+      )
     end
   end
 
