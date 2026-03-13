@@ -47,9 +47,10 @@ RSpec.describe "/reviews", type: :request do
 
     it "returns paginated reviews with meta" do
       get reviews_url, headers: valid_headers, as: :json
-      body = response.parsed_body
 
       expect(response).to be_successful
+      body = response.parsed_body
+
       expect(body["data"].size).to eq(20)
       expect(body["meta"]).to include(
         "page" => 1,
@@ -61,9 +62,10 @@ RSpec.describe "/reviews", type: :request do
 
     it "returns paginated reviews with meta for page 2" do
       get reviews_url, params: { page: 2 }, headers: valid_headers
-      body = response.parsed_body
 
       expect(response).to be_successful
+      body = response.parsed_body
+
       expect(body["data"].size).to eq(5)
       expect(body["meta"]).to include(
         "page" => 2,
@@ -75,9 +77,10 @@ RSpec.describe "/reviews", type: :request do
 
     it "respects limit parameter" do
       get reviews_url, params: { page: 2, limit: 10 }, headers: valid_headers
-      body = response.parsed_body
 
       expect(response).to be_successful
+      body = response.parsed_body
+
       expect(body["data"].size).to eq(10)
       expect(body["meta"]).to include(
         "page" => 2,
@@ -89,9 +92,10 @@ RSpec.describe "/reviews", type: :request do
 
     it "caps limit at 100" do
       get reviews_url, params: { limit: 999 }, headers: valid_headers
-      body = response.parsed_body
 
       expect(response).to be_successful
+      body = response.parsed_body
+
       expect(body["data"].size).to eq(25)
       expect(body["meta"]).to include(
         "page" => 1,
@@ -99,6 +103,42 @@ RSpec.describe "/reviews", type: :request do
         "total_count" => 25,
         "total_pages" => 1
       )
+    end
+
+    it "includes next_page and prev_page on a middle page" do
+      get reviews_url, params: { page: 2, limit: 10 }, headers: valid_headers
+
+      expect(response).to be_successful
+      body = response.parsed_body
+
+      expect(body["meta"]).to include(
+        "page" => 2,
+        "limit" => 10,
+        "total_count" => 25,
+        "total_pages" => 3,
+        "next_page" => 3,
+        "prev_page" => 1
+      )
+    end
+
+    it "sets prev_page to nil on the first page" do
+      get reviews_url, params: { page: 1, limit: 10 }, headers: valid_headers
+
+      expect(response).to be_successful
+      body = response.parsed_body
+
+      expect(body["meta"]["prev_page"]).to be_nil
+      expect(body["meta"]["next_page"]).to eq(2)
+    end
+
+    it "sets next_page to nil on the last page" do
+      get reviews_url, params: { page: 3, limit: 10 }, headers: valid_headers
+
+      expect(response).to be_successful
+      body = response.parsed_body
+
+      expect(body["meta"]["prev_page"]).to eq(2)
+      expect(body["meta"]["next_page"]).to be_nil
     end
   end
 

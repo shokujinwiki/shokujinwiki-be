@@ -18,9 +18,12 @@ class ReviewsController < ApplicationController
 
     reviews = Review.order(created_at: :desc).limit(limit).offset(offset)
 
+    next_page = page < total_pages ? page + 1 : nil
+    prev_page = page > 1 ? page - 1 : nil
+
     render json: {
       data: reviews,
-      meta: { page:, limit:, total_count:, total_pages: }
+      meta: { page:, limit:, total_count:, total_pages:, next_page:, prev_page: }
     }
   end
 
