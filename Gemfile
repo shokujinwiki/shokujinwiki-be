@@ -50,4 +50,7 @@ group :development, :test do
 
   gem "rspec-rails", "~> 8.0.0"
   gem "factory_bot_rails"
+  gem "rubocop-rspec", require: false
+  gem "rubocop-rspec_rails", require: false
+  gem "rubocop-factory_bot", require: false
 end

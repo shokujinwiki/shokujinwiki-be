@@ -12,7 +12,7 @@ require 'rails_helper'
 # of tools you can use to make these specs even more expressive, but we're
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
-RSpec.describe "/reviews", type: :request do
+RSpec.describe "/reviews" do
   # This should return the minimal set of attributes required to create a valid
   # Review. As you add validations to Review, be sure to
   # adjust the attributes here as well.
@@ -74,7 +74,7 @@ RSpec.describe "/reviews", type: :request do
         expect {
           post reviews_url,
                params: { review: invalid_attributes }, as: :json
-        }.to change(Review, :count).by(0)
+        }.not_to change(Review, :count)
       end
 
       it "renders a JSON response with errors for the new review" do
