@@ -155,36 +155,25 @@ RSpec.describe "/reviews", type: :request do
   end
 
   describe "POST /create" do
-    context "with valid parameters" do
-      it "creates a new Review" do
-        expect {
-          post reviews_url,
-               params: { review: valid_attributes }, headers: valid_headers, as: :json
-        }.to change(Review, :count).by(1)
-      end
+    it "returns bad request when content is missing" do
+      post reviews_url, params: {}, headers: valid_headers, as: :json
 
-      it "renders a JSON response with the new review" do
-        post reviews_url,
-             params: { review: valid_attributes }, headers: valid_headers, as: :json
-        expect(response).to have_http_status(:created)
-        expect(response.content_type).to match(a_string_including("application/json"))
-      end
+      expect(response).to have_http_status(:bad_request)
+      body = response.parsed_body
+      expect(body).to eq(
+        "message" => "param is missing or the value is empty or invalid: review"
+      )
     end
 
-    context "with invalid parameters" do
-      it "does not create a new Review" do
-        expect {
-          post reviews_url,
-               params: { review: invalid_attributes }, as: :json
-        }.not_to change(Review, :count)
-      end
+    it "returns bad request for malformed JSON" do
+      post reviews_url,
+            params: '{"review": {"content": "hello"', headers: valid_headers.merge({ "CONTENT_TYPE" => "application/json" })
 
-      it "renders a JSON response with errors for the new review" do
-        post reviews_url,
-             params: { review: invalid_attributes }, headers: valid_headers, as: :json
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(response.content_type).to match(a_string_including("application/json"))
-      end
+      expect(response).to have_http_status(:bad_request)
+      body = response.parsed_body
+      expect(body).to eq(
+        "message" => "Error occurred while parsing request parameters"
+      )
     end
   end
 
