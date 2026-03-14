@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  resources :users
+  resources :users do
+    resources :reviews, only: [ :index ], module: :users
+  end
   resources :reviews
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

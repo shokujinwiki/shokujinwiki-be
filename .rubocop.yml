@@ -14,9 +14,13 @@ plugins:
 
 AllCops:
   NewCops: enable
+FactoryBot/ExcessiveCreateList:
+  Enabled: false
 RSpec/ExampleLength:
   Enabled: false
 RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/NestedGroups:
   Enabled: false
 RSpecRails/InferredSpecType:
   Enabled: false
