@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  resource :session
+  resource :registration, only: [ :create ]
+  resource :session, only: [ :create, :destroy ]
   resources :passwords, param: :token
   resources :users do
     resources :reviews, only: [ :index ], module: :users

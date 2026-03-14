@@ -26,6 +26,10 @@ RSpecRails/InferredSpecType:
   Enabled: false
 Style/HashSyntax:
   EnforcedShorthandSyntax: always
+Style/SymbolArray:
+  EnforcedStyle: brackets
+Style/WordArray:
+  EnforcedStyle: brackets
 Layout/IndentationConsistency:
   Enabled: true
 Layout/IndentationWidth:
