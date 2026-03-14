@@ -16,20 +16,20 @@ class ReviewsController < ApplicationController
     total_pages = (total_count.to_f / limit).ceil
     offset = (page - 1) * limit
 
-    reviews = Review.order(created_at: :desc).limit(limit).offset(offset)
+    reviews = Review.includes(:user).order(created_at: :desc).limit(limit).offset(offset)
 
     next_page = page < total_pages ? page + 1 : nil
     prev_page = page > 1 ? page - 1 : nil
 
     render json: {
-      data: reviews,
+      data: reviews.map { |review| review_json(review) },
       meta: { page:, limit:, total_count:, total_pages:, next_page:, prev_page: }
     }
   end
 
   # GET /reviews/1
   def show
-    render json: @review
+    render json: review_json(@review)
   end
 
   # POST /reviews
@@ -60,11 +60,24 @@ class ReviewsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_review
-      @review = Review.find(params.expect(:id))
+      @review = Review.includes(:user).find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
     def review_params
       params.expect(review: [ :content, :user_id ])
+    end
+
+    def review_json(review)
+      {
+        id: review.id,
+        content: review.content,
+        user: {
+          id: review.user.id,
+          name: review.user.name
+        },
+        created_at: review.created_at.rfc3339,
+        updated_at: review.updated_at.rfc3339
+      }
     end
 end

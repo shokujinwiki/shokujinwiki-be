@@ -42,111 +42,162 @@ RSpec.describe "/reviews", type: :request do
   }
 
   describe "GET /index" do
-    let(:user) { create(:user) }
+    context "without pagination params" do
+      before { create_list(:review, 3, user:) }
 
-    before do
-      25.times do |i|
-        Review.create!(
-          content: "review #{i}",
-          user:
+      it "returns reviews" do
+        get reviews_url, headers: valid_headers
+
+        expect(response).to be_successful
+        body = response.parsed_body
+        review = body["data"].first
+
+        expect(review).to include("id", "content", "user", "created_at", "updated_at")
+        expect(review["user"]).to eq(
+          "id" => user.id,
+          "name" => user.name
+        )
+      end
+
+      it "returns pagination meta" do
+        get reviews_url, headers: valid_headers
+
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["meta"]).to eq(
+          "page" => 1,
+          "limit" => 20,
+          "total_count" => 3,
+          "total_pages" => 1,
+          "next_page" => nil,
+          "prev_page" => nil
         )
       end
     end
 
-    it "returns paginated reviews with meta" do
-      get reviews_url, headers: valid_headers
+    context "with default pagination params" do
+      before { 25.times { create(:review, user:) } }
 
-      expect(response).to be_successful
-      body = response.parsed_body
+      it "returns first page with 20 items" do
+        get reviews_url, headers: valid_headers
 
-      expect(body["data"].size).to eq(20)
-      expect(body["meta"]).to include(
-        "page" => 1,
-        "limit" => 20,
-        "total_count" => 25,
-        "total_pages" => 2
-      )
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["data"].size).to eq(20)
+        expect(body["meta"]).to include(
+          "page" => 1,
+          "limit" => 20,
+          "total_count" => 25,
+          "total_pages" => 2
+        )
+      end
     end
 
-    it "returns paginated reviews with meta for page 2" do
-      get reviews_url, params: { page: 2 }, headers: valid_headers
+    context "with page param" do
+      before { 25.times { create(:review, user:) } }
 
-      expect(response).to be_successful
-      body = response.parsed_body
+      it "returns the specified page" do
+        get reviews_url, params: { page: 2 }, headers: valid_headers
 
-      expect(body["data"].size).to eq(5)
-      expect(body["meta"]).to include(
-        "page" => 2,
-        "limit" => 20,
-        "total_count" => 25,
-        "total_pages" => 2
-      )
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["data"].size).to eq(5)
+        expect(body["meta"]).to include(
+          "page" => 2,
+          "limit" => 20,
+          "total_count" => 25,
+          "total_pages" => 2
+        )
+      end
     end
 
-    it "respects limit parameter" do
-      get reviews_url, params: { page: 2, limit: 10 }, headers: valid_headers
+    context "with limit param" do
+      before { 25.times { create(:review, user:) } }
 
-      expect(response).to be_successful
-      body = response.parsed_body
+      it "respects limit parameter" do
+        get reviews_url, params: { page: 2, limit: 10 }, headers: valid_headers
 
-      expect(body["data"].size).to eq(10)
-      expect(body["meta"]).to include(
-        "page" => 2,
-        "limit" => 10,
-        "total_count" => 25,
-        "total_pages" => 3
-      )
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["data"].size).to eq(10)
+        expect(body["meta"]).to include(
+          "page" => 2,
+          "limit" => 10,
+          "total_count" => 25,
+          "total_pages" => 3
+        )
+      end
     end
 
-    it "caps limit at 100" do
-      get reviews_url, params: { limit: 999 }, headers: valid_headers
+    context "with limit exceeding maximum" do
+      before { 25.times { create(:review, user:) } }
 
-      expect(response).to be_successful
-      body = response.parsed_body
+      it "caps limit at 100" do
+        get reviews_url, params: { limit: 999 }, headers: valid_headers
 
-      expect(body["data"].size).to eq(25)
-      expect(body["meta"]).to include(
-        "page" => 1,
-        "limit" => 100,
-        "total_count" => 25,
-        "total_pages" => 1
-      )
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["data"].size).to eq(25)
+        expect(body["meta"]).to include(
+          "page" => 1,
+          "limit" => 100,
+          "total_count" => 25,
+          "total_pages" => 1
+        )
+      end
     end
 
-    it "includes next_page and prev_page on a middle page" do
-      get reviews_url, params: { page: 2, limit: 10 }, headers: valid_headers
+    context "when on the first page" do
+      before { 25.times { create(:review, user:) } }
 
-      expect(response).to be_successful
-      body = response.parsed_body
+      it "sets prev_page to nil" do
+        get reviews_url, params: { page: 1, limit: 10 }, headers: valid_headers
 
-      expect(body["meta"]).to include(
-        "page" => 2,
-        "limit" => 10,
-        "total_count" => 25,
-        "total_pages" => 3,
-        "next_page" => 3,
-        "prev_page" => 1
-      )
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["meta"]["prev_page"]).to be_nil
+        expect(body["meta"]["next_page"]).to eq(2)
+      end
     end
 
-    it "sets prev_page to nil on the first page" do
-      get reviews_url, params: { page: 1, limit: 10 }, headers: valid_headers
+    context "when on a middle page" do
+      before { 25.times { create(:review, user:) } }
 
-      expect(response).to be_successful
-      body = response.parsed_body
+      it "includes next_page and prev_page" do
+        get reviews_url, params: { page: 2, limit: 10 }, headers: valid_headers
 
-      expect(body["meta"]["prev_page"]).to be_nil
-      expect(body["meta"]["next_page"]).to eq(2)
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["meta"]).to include(
+          "page" => 2,
+          "limit" => 10,
+          "total_count" => 25,
+          "total_pages" => 3,
+          "next_page" => 3,
+          "prev_page" => 1
+        )
+      end
     end
 
-    it "sets next_page to nil on the last page" do
-      get reviews_url, params: { page: 3, limit: 10 }, headers: valid_headers
+    context "when on the last page" do
+      before { 25.times { create(:review, user:) } }
 
-      expect(response).to be_successful
-      body = response.parsed_body
+      it "sets next_page to nil" do
+        get reviews_url, params: { page: 3, limit: 10 }, headers: valid_headers
 
-      expect(body["meta"]["prev_page"]).to eq(2)
-      expect(body["meta"]["next_page"]).to be_nil
+        expect(response).to be_successful
+        body = response.parsed_body
+
+        expect(body["meta"]["prev_page"]).to eq(2)
+        expect(body["meta"]["next_page"]).to be_nil
+      end
     end
   end
 
