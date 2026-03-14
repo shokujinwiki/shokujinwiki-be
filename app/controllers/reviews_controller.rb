@@ -1,7 +1,7 @@
 class ReviewsController < ApplicationController
   include Paginatable
 
-  before_action :set_review, only: %i[ show update destroy ]
+  before_action :set_review, only: [ :show, :update, :destroy ]
 
   # GET /reviews
   def index

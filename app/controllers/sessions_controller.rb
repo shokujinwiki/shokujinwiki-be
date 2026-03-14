@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  allow_unauthenticated_access only: %i[ create ]
+  allow_unauthenticated_access only: [ :create ]
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { render json: { message: "Too many requests. Please try again later." }, status: :too_many_requests }
 
   def create
