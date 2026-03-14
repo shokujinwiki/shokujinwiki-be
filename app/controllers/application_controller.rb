@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  include Authentication
   rescue_from ActionController::ParameterMissing, with: :bad_request
   rescue_from ActionDispatch::Http::Parameters::ParseError, with: :bad_request
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
