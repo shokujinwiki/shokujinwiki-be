@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "/users/:user_id/reviews", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
-  let(:valid_headers) { {} }
+  let(:valid_headers) { auth_headers_for(user) }
 
   describe "GET /index" do
     context "when user exists" do

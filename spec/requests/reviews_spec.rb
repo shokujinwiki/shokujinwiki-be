@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "/reviews", type: :request do
   let(:user) { create(:user) }
-  let(:valid_headers) { {} }
+  let(:valid_headers) { auth_headers_for(user) }
 
   describe "GET /index" do
     context "without pagination params" do
