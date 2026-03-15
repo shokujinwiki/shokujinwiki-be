@@ -19,7 +19,6 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
-
 development:
   <<: *default
   database: shokujinwiki_be_development
@@ -89,20 +88,6 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
+  primary:
     <<: *default
-    database: shokujinwiki_be_production
-    username: shokujinwiki_be
-    password: <%= ENV["SHOKUJINWIKI_BE_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: shokujinwiki_be_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: shokujinwiki_be_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: shokujinwiki_be_production_cable
-    migrations_paths: db/cable_migrate
+    url: <%= ENV["DATABASE_URL"] %>
