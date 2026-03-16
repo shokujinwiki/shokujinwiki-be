@@ -1,0 +1,7 @@
+servers:
+  web:
+    - 3.114.124.74
+
+proxy:
+  ssl: true
+  host: dev-api.shokujin.com
