@@ -5,3 +5,7 @@ servers:
 proxy:
   ssl: true
   host: dev-api.shokujin.com
+
+env:
+  clear:
+    CORS_ORIGINS: "http://localhost:3000,https://dev.shokujin.com"
