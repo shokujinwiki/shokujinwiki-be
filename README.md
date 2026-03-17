@@ -1,24 +1,28 @@
-# README
+# shokujinwiki-be
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## 環境
 
-Things you may want to cover:
+- Ruby 3.4.8
+- PostgreSQL 17
+- Bundler
 
-* Ruby version
+## セットアップ
 
-* System dependencies
+```bash
+bundle install
+docker compose up -d
+bin/rails db:create db:migrate
+bin/rails server
+```
 
-* Configuration
+## テスト・Lint
 
-* Database creation
+```bash
+bundle exec rspec       # テスト
+bin/rubocop             # Lint
+bin/ci                  # 全チェック (brakeman, bundler-audit, rubocop, rspec)
+```
 
-* Database initialization
+## デプロイ
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Kamal + Docker。`main` ブランチへの push で GitHub Actions 経由で自動デプロイ。
