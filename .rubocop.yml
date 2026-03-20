@@ -24,6 +24,9 @@ RSpec/MultipleExpectations:
   Enabled: false
 RSpec/NestedGroups:
   Enabled: false
+RSpec/VariableName:
+  AllowedPatterns:
+    - ^Authorization$
 RSpecRails/InferredSpecType:
   Enabled: false
 Style/HashSyntax:
