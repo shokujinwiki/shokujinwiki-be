@@ -31,7 +31,7 @@ module Authentication
     end
 
     def request_authentication
-      render json: { message: "Authorization required" }, status: :unauthorized
+      render_error(message: "Authorization required", status: :unauthorized)
     end
 
     def start_new_session_for(user)

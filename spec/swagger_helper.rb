@@ -33,6 +33,59 @@ RSpec.configure do |config|
             type: :http,
             scheme: :bearer
           }
+        },
+        schemas: {
+          review: {
+            type: :object,
+            properties: {
+              id: { type: :integer },
+              content: { type: :string },
+              user: { "$ref" => "#/components/schemas/user_summary" },
+              created_at: { type: :string, format: "date-time" },
+              updated_at: { type: :string, format: "date-time" }
+            },
+            required: [ 'id', 'content', 'user', 'created_at', 'updated_at' ]
+          },
+          user_summary: {
+            type: :object,
+            properties: {
+              id: { type: :integer },
+              name: { type: :string }
+            },
+            required: [ 'id', 'name' ]
+          },
+          pagination_meta: {
+            type: :object,
+            properties: {
+              page: { type: :integer },
+              limit: { type: :integer },
+              total_count: { type: :integer },
+              total_pages: { type: :integer },
+              next_page: { type: :integer, nullable: true },
+              prev_page: { type: :integer, nullable: true }
+            },
+            required: [ 'page', 'limit', 'total_count', 'total_pages', 'next_page', 'prev_page' ]
+          },
+          error_response: {
+            type: :object,
+            properties: {
+              error: {
+                type: :object,
+                properties: {
+                  message: { type: :string },
+                  details: {
+                    type: :object,
+                    additionalProperties: {
+                      type: :array,
+                      items: { type: :string }
+                    }
+                  }
+                },
+                required: [ 'message' ]
+              }
+            },
+            required: [ 'error' ]
+          }
         }
       }
     }

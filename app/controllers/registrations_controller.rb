@@ -9,7 +9,7 @@ class RegistrationsController < ApplicationController
       session = start_new_session_for(user)
       render json: { token: session.token }, status: :created
     else
-      render json: { errors: user.errors }, status: :unprocessable_entity
+      render_error(message: "Validation failed", details: user.errors.messages, status: :unprocessable_content)
     end
   end
 

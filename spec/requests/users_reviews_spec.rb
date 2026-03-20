@@ -112,7 +112,7 @@ RSpec.describe "/users/:user_id/reviews", type: :request do
         expect(response).to have_http_status(:not_found)
         body = response.parsed_body
         expect(body).to eq(
-          "message" => "User not found"
+          "error" => { "message" => "User not found" }
         )
       end
     end

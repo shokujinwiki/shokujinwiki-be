@@ -6,15 +6,17 @@ class ApplicationController < ActionController::API
 
   private
 
+    def render_error(message:, status:, details: nil)
+      body = { error: { message: } }
+      body[:error][:details] = details if details
+      render json: body, status:
+    end
+
     def bad_request(exception)
-      render json: {
-        message: exception.message
-      }, status: :bad_request
+      render_error(message: exception.message, status: :bad_request)
     end
 
     def record_not_found(exception)
-      render json: {
-        message: "#{exception.model} not found"
-      }, status: :not_found
+      render_error(message: "#{exception.model} not found", status: :not_found)
     end
 end

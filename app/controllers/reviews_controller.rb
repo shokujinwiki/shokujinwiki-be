@@ -26,7 +26,7 @@ class ReviewsController < ApplicationController
     if @review.save
       render json: ReviewSerializer.new(@review).as_json, status: :created, location: @review
     else
-      render json: @review.errors, status: :unprocessable_content
+      render_error(message: "Validation failed", details: @review.errors.messages, status: :unprocessable_content)
     end
   end
 
@@ -35,7 +35,7 @@ class ReviewsController < ApplicationController
     if @review.update(review_params)
       render json: ReviewSerializer.new(@review).as_json
     else
-      render json: @review.errors, status: :unprocessable_content
+      render_error(message: "Validation failed", details: @review.errors.messages, status: :unprocessable_content)
     end
   end
 

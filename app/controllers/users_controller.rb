@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     if @user.save
       render json: @user, status: :created, location: @user
     else
-      render json: @user.errors, status: :unprocessable_content
+      render_error(message: "Validation failed", details: @user.errors.messages, status: :unprocessable_content)
     end
   end
 
@@ -29,7 +29,7 @@ class UsersController < ApplicationController
     if @user.update(user_params)
       render json: @user
     else
-      render json: @user.errors, status: :unprocessable_content
+      render_error(message: "Validation failed", details: @user.errors.messages, status: :unprocessable_content)
     end
   end
 

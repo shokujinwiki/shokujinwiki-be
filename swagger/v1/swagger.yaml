@@ -1,0 +1,290 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/reviews":
+    get:
+      summary: Retrieves a list of reviews
+      operationId: listReviews
+      tags:
+      - Reviews
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: reviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/review"
+                  meta:
+                    "$ref": "#/components/schemas/pagination_meta"
+                required:
+                - data
+                - meta
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    post:
+      summary: Creates a new review
+      operationId: createReview
+      tags:
+      - Reviews
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: review created successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/review"
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                review:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                    user_id:
+                      type: integer
+                  required:
+                  - content
+                  - user_id
+  "/reviews/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves a specific review
+      operationId: getReview
+      tags:
+      - Reviews
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: review retrieved successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/review"
+        '404':
+          description: review not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    patch:
+      summary: Updates a specific review
+      operationId: updateReview
+      tags:
+      - Reviews
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: review updated successfully
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/review"
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+        '404':
+          description: review not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                review:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+              required:
+              - review
+    delete:
+      summary: Deletes a specific review
+      operationId: deleteReview
+      tags:
+      - Reviews
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: review deleted successfully
+        '404':
+          description: review not found
+  "/session":
+    post:
+      summary: ログイン
+      operationId: createSession
+      tags:
+      - Authentication
+      security: []
+      parameters: []
+      responses:
+        '201':
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                required:
+                - token
+        '401':
+          description: 認証失敗
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_address:
+                  type: string
+                password:
+                  type: string
+              required:
+              - email_address
+              - password
+servers:
+- url: http://localhost:3000
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+  schemas:
+    review:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        user:
+          "$ref": "#/components/schemas/user_summary"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - content
+      - user
+      - created_at
+      - updated_at
+    user_summary:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+      - id
+      - name
+    pagination_meta:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total_count:
+          type: integer
+        total_pages:
+          type: integer
+        next_page:
+          type: integer
+          nullable: true
+        prev_page:
+          type: integer
+          nullable: true
+      required:
+      - page
+      - limit
+      - total_count
+      - total_pages
+      - next_page
+      - prev_page
+    error_response:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+          required:
+          - message
+      required:
+      - error
