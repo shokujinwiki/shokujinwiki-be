@@ -84,11 +84,8 @@ paths:
                   properties:
                     content:
                       type: string
-                    user_id:
-                      type: integer
                   required:
                   - content
-                  - user_id
   "/reviews/{id}":
     parameters:
     - name: id
@@ -137,6 +134,12 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/error_response"
+        '403':
+          description: forbidden
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
         '404':
           description: review not found
           content:
@@ -166,6 +169,8 @@ paths:
       responses:
         '204':
           description: review deleted successfully
+        '403':
+          description: forbidden
         '404':
           description: review not found
   "/session":

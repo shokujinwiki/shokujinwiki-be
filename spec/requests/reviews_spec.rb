@@ -52,10 +52,9 @@ RSpec.describe "/reviews", type: :request do
           review: {
             type: :object,
             properties: {
-              content: { type: :string },
-              user_id: { type: :integer }
+              content: { type: :string }
             },
-            required: [ "content", "user_id" ]
+            required: [ "content" ]
           }
         }
       }
@@ -63,7 +62,7 @@ RSpec.describe "/reviews", type: :request do
       response "201", "review created successfully" do
         schema "$ref" => "#/components/schemas/review"
 
-        let(:body) { { content: "Great", user_id: user.id } }
+        let(:body) { { content: "Great" } }
 
         run_test!
       end
@@ -72,7 +71,7 @@ RSpec.describe "/reviews", type: :request do
         schema "$ref" => "#/components/schemas/error_response"
 
         let(:body) {
-          { content: nil, user_id: user.id }
+          { content: nil }
         }
 
         run_test!
@@ -152,6 +151,15 @@ RSpec.describe "/reviews", type: :request do
         run_test!
       end
 
+      response "403", "forbidden" do
+        schema "$ref" => "#/components/schemas/error_response"
+
+        let(:id) { create(:review, user: create(:user)).id }
+        let(:body) { { review: { content: "Updated content" } } }
+
+        run_test!
+      end
+
       response "404", "review not found" do
         schema "$ref" => "#/components/schemas/error_response"
 
@@ -169,6 +177,14 @@ RSpec.describe "/reviews", type: :request do
 
       response "204", "review deleted successfully" do
         let(:id) { create(:review, user:).id }
+
+        run_test!
+      end
+
+      response "403", "forbidden" do
+        schema "$ref" => "#/components/schemas/error_response"
+
+        let(:id) { create(:review, user: create(:user)).id }
 
         run_test!
       end

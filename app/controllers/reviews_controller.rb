@@ -2,6 +2,7 @@ class ReviewsController < ApplicationController
   include Paginatable
 
   before_action :set_review, only: [ :show, :update, :destroy ]
+  before_action :authorize_owner!, only: [ :update, :destroy ]
 
   # GET /reviews
   def index
@@ -21,7 +22,7 @@ class ReviewsController < ApplicationController
 
   # POST /reviews
   def create
-    @review = Review.new(review_params)
+    @review = Current.user.reviews.new(review_params)
 
     if @review.save
       render json: ReviewSerializer.new(@review).as_json, status: :created, location: @review
@@ -50,6 +51,10 @@ class ReviewsController < ApplicationController
     end
 
     def review_params
-      params.expect(review: [ :content, :user_id ])
+      params.expect(review: [ :content ])
+    end
+
+    def authorize_owner!
+      render_error(message: "Forbidden", status: :forbidden) unless @review.user_id == Current.user.id
     end
 end
